@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_app1/component/todo_list.dart';
+import './getx/todo.dart';
+import 'package:intl/intl.dart';
+
+import 'component/todo_input_field.dart';
 
 void main() {
-  runApp(const GetMaterialApp(home: MyApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,30 +23,68 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Todo App'),
+      home: const TodoApp(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class TodoApp extends StatefulWidget {
+  const TodoApp({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<TodoApp> createState() => _TodoAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _TodoAppState extends State<TodoApp> {
+  final TodoController todoController = Get.put(TodoController());
+
+  DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+
+  void handleClearStateUpdate() {
+    todoController.editedTodoId.value = '';
+    todoController.inputValue = '';
+    todoController.isEditMode.value = false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(widget.title),
-      ),
-      body: Column(
-        children: [],
+    return DefaultTabController(
+      initialIndex: 0,
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Todo App'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Not Completed'),
+              Tab(text: 'Completed'),
+            ],
+          ),
+        ),
+        body: Obx(
+          () => Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                TodoInputField(
+                  todoController: todoController,
+                  editTodoId: todoController.editedTodoId.value,
+                  isEditMode: todoController.isEditMode.value,
+                  onAfterUpdate: handleClearStateUpdate,
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      todoList(todos: todoController.notCompletedTodo),
+                      todoList(todos: todoController.completedTodo),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
