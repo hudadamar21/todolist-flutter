@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_app1/component/todo_list.dart';
-import './getx/todo.dart';
 import 'package:intl/intl.dart';
+import './getx/todo.dart';
 
 import 'component/todo_input_field.dart';
+import 'component/todo_list.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
